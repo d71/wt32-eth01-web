@@ -1,4 +1,4 @@
-/* NetNode v 0.20240529.1
+/* NetNode v 0.20240529.2
 
    Web сервер WT32-ETH0
    получает ip по dhcp
@@ -226,8 +226,15 @@ void WebPort() {
 void SetPort() { // Callback
 
   if (server.hasArg("port_secret")) {
-    out_pin2 = server.arg("out2").toInt();
-    out_pin4 = server.arg("out4").toInt();
+
+    if (server.hasArg("out2")){
+      out_pin2 = server.arg("out2").toInt();
+    }
+
+    if (server.hasArg("out4")){
+      out_pin4 = server.arg("out4").toInt();
+    }
+
     String get_port_secret = server.arg("port_secret");
 
     if (get_port_secret == port_secret) {
@@ -278,7 +285,9 @@ void GetPort() { // Callback
   String message = "{\"serial_number\":\"" + serial_number + "\"," +
                     "\"random_number\":\"" + random_number + "\"," +
                     "\"out2\":\"" + String(out_pin2) + "\"," +
-                   "\"out4\":\"" + String(out_pin4) + "\"}";
+                   "\"out4\":\"" + String(out_pin4) + "\"," +
+                   "\"in12\":\"" + String(in_pin12) + "\"" +
+                   "\"in14\":\"" + String(in_pin14) + "\"}";
              
   server.send(200, "text/plain", message); // Send message back to page
 

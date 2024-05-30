@@ -10,6 +10,8 @@
 
   на IO15 подана 1 - с этоё ноги снимается питание для подтяжки кнопок IN12 и IN14
 
+  Далее необходимо предусмотреть сброс параметров 
+
 */
 
 
@@ -286,7 +288,7 @@ void GetPort() { // Callback
                     "\"random_number\":\"" + random_number + "\"," +
                     "\"out2\":\"" + String(out_pin2) + "\"," +
                    "\"out4\":\"" + String(out_pin4) + "\"," +
-                   "\"in12\":\"" + String(in_pin12) + "\"" +
+                   "\"in12\":\"" + String(in_pin12) + "\"," +
                    "\"in14\":\"" + String(in_pin14) + "\"}";
              
   server.send(200, "text/plain", message); // Send message back to page

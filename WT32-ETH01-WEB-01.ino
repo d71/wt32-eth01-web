@@ -1,4 +1,4 @@
-/* NetNode v 0.20240529.2
+/* NetNode v 0.20240529.3
 
    Web сервер WT32-ETH0
    получает ip по dhcp
@@ -8,8 +8,7 @@
    инфу при старте выводит на Serial скорость 9600
    тыкается в сервер и пишет в скрипт сервера port и его state
 
-   План:
-      переделать работу с портами ввода - по железу
+  на IO15 подана 1 - с этоё ноги снимается питание для подтяжки кнопок IN12 и IN14
 
 */
 
@@ -54,6 +53,7 @@ WiFiClient client;
 //out
 int OUT2 = 2;
 int OUT4 = 4;
+int OUT15 = 15;
 
 //in
 int IN12 = 12;
@@ -477,6 +477,9 @@ void setup() {
 
   pinMode(OUT2, OUTPUT);
   pinMode(OUT4, OUTPUT);
+  
+  pinMode(OUT15, OUTPUT); //питание для кнопок
+  digitalWrite(OUT15, HIGH);
 
   pinMode(IN12, INPUT);
   pinMode(IN14, INPUT);

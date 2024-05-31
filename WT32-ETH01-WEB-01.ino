@@ -1,4 +1,4 @@
-/* NetNode v 0.20240529.3
+/* NetNode by d71
 
    Web сервер WT32-ETH0
    получает ip по dhcp
@@ -10,7 +10,8 @@
 
   на IO15 подана 1 - с этоё ноги снимается питание для подтяжки кнопок IN12 и IN14
 
-  Далее необходимо предусмотреть сброс параметров 
+
+  а Arduino IDE целевая плата ESP32 Dev Module
 
 */
 
@@ -33,6 +34,8 @@ IPAddress gateway(192, 168, 1, 1);
 IPAddress subnet(255, 255, 255, 0);
 IPAddress dns1(8, 8, 8, 8);
 IPAddress dns2 = (uint32_t)0x00000000;
+
+const String build = "1.20240531.3";
 
 //for preferens
 Preferences Pref;
@@ -107,8 +110,9 @@ void WebSetup() { //CallBack
           remote_script = document.getElementById("remote_script").value;
           port_secret = document.getElementById("port_secret").value
           password = document.getElementById("password").value;
+          new_password = document.getElementById("new_password").value;
           
-          url="SetServer?remote_server="+remote_server+"&remote_script="+remote_script+"&port_secret="+port_secret+"&password="+password;
+          url="SetServer?remote_server="+remote_server+"&remote_script="+remote_script+"&port_secret="+port_secret+"&password="+password+"&new_password="+new_password;
 
           xmlhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
@@ -130,7 +134,8 @@ void WebSetup() { //CallBack
     
       <input type=button value="Reload Data" onclick="getData()"> <br><br>
 
-      password: <input id=password type=password name=password><br>
+      system password: <input id=password type=password name=password><br>
+      new system password: <input id=new_password type=text name=new_password><br>
       remote server: <input id=remote_server type=text value='0.0.0.1' name=remote_server> <br>
       remote script: <input id=remote_script type=text value='data_in.php' name=remote_script> <br>
       port secret: <input id=port_secret type=text value='' name=port_secret> <br>
@@ -264,8 +269,14 @@ void SetServer() { // Callback
     remote_script = server.arg("remote_script");
     port_secret = server.arg("port_secret");
     String get_password = server.arg("password");
+    String new_password = server.arg("new_password");
 
     if (get_password == password) {
+
+      if( new_password.length() > 3 && new_password.length() < 12 ){ //ну куда уж пароль меньше 4 знаков
+        password = new_password;
+        Serial.println("new setup password: " + password);
+      }
 
       SaveServer();
       Serial.println("New Remote Server: " + remote_server + '/' + remote_script);
@@ -324,6 +335,7 @@ void SaveServer() {
     Pref.putString("remote_server", remote_server);
     Pref.putString("remote_script", remote_script);
     Pref.putString("port_secret", port_secret);
+    Pref.putString("password", password);
   Pref.end();
 }
 
@@ -441,7 +453,8 @@ void ReadConfig() {
 
   password = Pref.getString("password");
   if (password.length() == 0 ) {
-    password = String(random(10000000));
+    //password = String(random(10000000));
+    password = "12345678";
     Pref.putString("password", password);
   }
 
@@ -451,7 +464,8 @@ void ReadConfig() {
 
   port_secret = Pref.getString("port_secret");
   if (port_secret.length() == 0 ) {
-    port_secret = String(random(10000000));
+    //port_secret = String(random(10000000));
+    port_secret = "12345678";
     Pref.putString("port_secret", port_secret);
   }
 
@@ -489,7 +503,7 @@ void setup() {
 
   Serial.begin(9600);
   delay(1000);
-  Serial.println("\r\n\r\nHello");
+  Serial.println("\r\n\r\n");
 
   WiFi.onEvent(WiFiEvent);
 
@@ -510,7 +524,9 @@ void setup() {
 
   //start server
   server.begin();
-  Serial.println("Local web Server Started");
+  Serial.println("NetNode by d71 ver " + build);
+  
+  Serial.println("Local Web Server Started");
   
   Serial.print("MAC: ");
   Serial.println( ETH.macAddress() );
@@ -518,12 +534,13 @@ void setup() {
   Serial.print("IPv4: ");
   Serial.println( ETH.localIP() );
   
-  Serial.println("");
+  Serial.println("\r\n");
 
   ReadConfig();
 
-  //httpRequest(99, 1); //port,state
-  //httpRequest(88, 0); //port,state
+  //запоминаем состоние входов
+  old_in_pin12 = digitalRead(IN12);
+  old_in_pin14 = digitalRead(IN14);
 }
 
 

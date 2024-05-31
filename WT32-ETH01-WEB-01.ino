@@ -35,7 +35,7 @@ IPAddress subnet(255, 255, 255, 0);
 IPAddress dns1(8, 8, 8, 8);
 IPAddress dns2 = (uint32_t)0x00000000;
 
-#define SKETCH_VERSION "1.20240531.7"
+#define SKETCH_VERSION "1.20240531.8"
 
 //for preferens
 Preferences Pref;
@@ -72,7 +72,7 @@ void WebSetup() { //CallBack
   
   <html>
   <head>
-  <title>ESP32 NetNode</title>
+  <title>ESP32 NetNode Setup</title>
     <script>
 
     window.onload = function(){
@@ -129,6 +129,8 @@ void WebSetup() { //CallBack
     </head>
   <body>
     <h2>WT32-ETH01 NetNode</h2>
+    <a href=/>Port Operate</a><br>
+    <br>
     random out: <span id=random_number></span><br>
     SN: <span id=serial_number> x </span><br>
     
@@ -212,6 +214,8 @@ void WebPort() {
     </head>
   <body>
     <h2>WT32-ETH01 NetNode Port</h2>
+    <a href=/Setup>Setup</a><br>
+    <br>
     random out: <span id=random_number></span><br>
     SN: <span id=serial_number> x </span><br>
     <br>

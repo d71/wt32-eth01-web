@@ -465,7 +465,7 @@ void ReadConfig() {
   port_secret = Pref.getString("port_secret");
   if (port_secret.length() == 0 ) {
     //port_secret = String(random(10000000));
-    port_secret = "12345678";
+    port_secret = "87654321";
     Pref.putString("port_secret", port_secret);
   }
 

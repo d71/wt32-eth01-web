@@ -35,7 +35,7 @@ IPAddress subnet(255, 255, 255, 0);
 IPAddress dns1(8, 8, 8, 8);
 IPAddress dns2 = (uint32_t)0x00000000;
 
-const String build = "1.20240531.3";
+#define SKETCH_VERSION "1.20240531.7"
 
 //for preferens
 Preferences Pref;
@@ -135,6 +135,7 @@ void WebSetup() { //CallBack
       <input type=button value="Reload Data" onclick="getData()"> <br><br>
 
       system password: <input id=password type=password name=password><br>
+      <br>
       new system password: <input id=new_password type=text name=new_password><br>
       remote server: <input id=remote_server type=text value='0.0.0.1' name=remote_server> <br>
       remote script: <input id=remote_script type=text value='data_in.php' name=remote_script> <br>
@@ -178,7 +179,8 @@ void WebPort() {
             document.getElementById("serial_number").innerHTML = obj.serial_number;
             document.getElementById("out2").value = obj.out2;
             document.getElementById("out4").value = obj.out4;
-            //document.getElementById("port_secret").value = "";
+            document.getElementById("in12").innerHTML = obj.in12;
+            document.getElementById("in14").innerHTML = obj.in14;
           }
         };
         
@@ -212,6 +214,10 @@ void WebPort() {
     <h2>WT32-ETH01 NetNode Port</h2>
     random out: <span id=random_number></span><br>
     SN: <span id=serial_number> x </span><br>
+    <br>
+    port IN12: <span id=in12></span><br>
+    port IN14: <span id=in14></span><br>
+    <br>
     
       <input type=button value="Reload Port Status" onclick="getPort()"> <br><br>
 
@@ -219,6 +225,7 @@ void WebPort() {
       port 02: <input id=out2 type=text value='' name=out2> <br>
       port 04: <input id=out4 type=text value='' name=out4> <br>
       <input type=button value=SetPort onclick="SetPort()" >
+      
       
   </body>
   </html>
@@ -524,7 +531,7 @@ void setup() {
 
   //start server
   server.begin();
-  Serial.println("NetNode by d71 ver " + build);
+  Serial.println("NetNode by d71 ver " + String(SKETCH_VERSION));
   
   Serial.println("Local Web Server Started");
   

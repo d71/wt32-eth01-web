@@ -3,7 +3,7 @@
 $time_now=date("Y-m-d H:i:s");
 $ip = $_SERVER["REMOTE_ADDR"];
 
-if ( isset($_GET["sn"]) ){
+if ( isset($_GET["port"]) ){
 
     $sn=$_GET["sn"];
     $port=$_GET["port"];
@@ -11,6 +11,11 @@ if ( isset($_GET["sn"]) ){
     $event = "node $sn: port=$port state=$state ";
 }
 
-file_put_contents(__DIR__."/log.txt","$time_now $ip $event\n", FILE_APPEND | LOCK_EX);
+if ( isset($_GET["hello"]) ){
 
-?>
+    $sn=$_GET["sn"];
+    $event = "node $sn: hello ";
+}
+
+
+file_put_contents(__DIR__."/log.txt","$time_now $ip $event\n", FILE_APPEND | LOCK_EX);

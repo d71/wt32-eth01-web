@@ -35,7 +35,7 @@ IPAddress subnet(255, 255, 255, 0);
 IPAddress dns1(8, 8, 8, 8);
 IPAddress dns2 = (uint32_t)0x00000000;
 
-#define SKETCH_VERSION "1.20240531.8"
+#define SKETCH_VERSION "1.20240605.1"
 
 //for preferens
 Preferences Pref;
@@ -58,7 +58,7 @@ WiFiClient client;
 //out
 int OUT2 = 2;
 int OUT4 = 4;
-int OUT15 = 15;
+int OUT15 = 15; //управляемая подтяжка к кнопкам
 
 //in
 int IN12 = 12;
@@ -350,7 +350,7 @@ void SaveServer() {
   Pref.end();
 }
 
-void httpRequest(int PortEvent, int state)
+void SendState(int PortEvent, int state)
 {
 
   if (remote_server == "0.0.0.0") {
@@ -361,8 +361,7 @@ void httpRequest(int PortEvent, int state)
 
   Serial.println("try Request server " + remote_server);
 
-  // close any connection before send a new request
-  // this will free the socket on the WiFi shield
+  // close any connection before send a new request this will free the socket on the WiFi shield
   client.stop();
 
   // if there's a successful connection
@@ -383,6 +382,47 @@ void httpRequest(int PortEvent, int state)
     client.println();
 
     Serial.println("Request end");
+  } else {
+    // if you couldn't make a connection
+    Serial.println("Connection failed");
+  }
+
+  Serial.println("");
+
+}
+
+
+void SendHello()
+{
+
+  if (remote_server == "0.0.0.0") {
+    Serial.println("Set remote server addres other 0.0.0.0");
+    Serial.println("");
+    return;
+  }
+
+  Serial.println("try Request hello server " + remote_server);
+
+  // close any connection before send a new request this will free the socket on the WiFi shield
+  client.stop();
+
+  // if there's a successful connection
+  if (client.connect( remote_server.c_str(), 80)) {
+
+    String s;
+    s = "Connecting to ..."; s += remote_server;
+    Serial.println(s);
+
+    // send the HTTP PUT request
+    s = "GET /" + remote_script + "?sn=" + serial_number + "&hello HTTP/1.1";
+    client.println(s);
+
+    s = "Host: " + remote_server;
+    client.println(s);
+    client.println("Connection: close");
+    client.println();
+
+    Serial.println("Request hello end");
   } else {
     // if you couldn't make a connection
     Serial.println("Connection failed");
@@ -498,6 +538,7 @@ void ReadConfig() {
 }
 
 void setup() {
+  
   pinMode(ETH_POWER_PIN_ALTERNATIVE, OUTPUT);
   digitalWrite(ETH_POWER_PIN_ALTERNATIVE, HIGH);
 
@@ -552,6 +593,9 @@ void setup() {
   //запоминаем состоние входов
   old_in_pin12 = digitalRead(IN12);
   old_in_pin14 = digitalRead(IN14);
+
+  SendHello();
+  
 }
 
 
@@ -569,7 +613,7 @@ void loop() {
     Serial.println("IN12 change state=" + String(in_pin12));
     Serial.println("");
     old_in_pin12 = in_pin12;
-    httpRequest(12, in_pin12);  
+    SendState(12, in_pin12);  
     delay(500);
   }
 
@@ -582,7 +626,7 @@ void loop() {
     Serial.println("IN14 change state=" + String(in_pin14));
     Serial.println("");
     old_in_pin14 = in_pin14;
-    httpRequest(14, in_pin14);  
+    SendState(14, in_pin14);  
     delay(500);
   }
 

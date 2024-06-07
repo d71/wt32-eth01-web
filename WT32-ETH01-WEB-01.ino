@@ -35,7 +35,7 @@ IPAddress subnet(255, 255, 255, 0);
 IPAddress dns1(8, 8, 8, 8);
 IPAddress dns2 = (uint32_t)0x00000000;
 
-#define SKETCH_VERSION "1.20240605.1"
+#define SKETCH_VERSION "1.20240606.1"
 
 //for preferens
 Preferences Pref;
@@ -278,7 +278,7 @@ void SetServer() { // Callback
   if (server.hasArg("remote_server")) {
     remote_server = server.arg("remote_server");
     remote_script = server.arg("remote_script");
-    port_secret = server.arg("port_secret");
+    new_port_secret = server.arg("port_secret");
     String get_password = server.arg("password");
     String new_password = server.arg("new_password");
 
@@ -289,9 +289,13 @@ void SetServer() { // Callback
         Serial.println("new setup password: " + password);
       }
 
+      if( new_port_secret.length() > 3 && new_port_secret.length() < 12 ){ //ну куда уж пароль меньше 4 знаков
+        port_secret = new_port_secret;
+        Serial.println("new port secret: " + port_secret);
+      }
+
       SaveServer();
       Serial.println("New Remote Server: " + remote_server + '/' + remote_script);
-      Serial.println("New port secret: " + port_secret);
     } else {
 
       Serial.println("! Wrong password for save Server address");
